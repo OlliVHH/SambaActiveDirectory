@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Erstellt Macvlan-Netzwerk und Datenverzeichnisse; generiert sambacc-Konfiguration.
+# Erstellt Datenverzeichnisse für den Samba AD DC.
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -15,18 +15,14 @@ set -a
 source "${ENV_FILE}"
 set +a
 
-: "${MACVLAN_PARENT:?MACVLAN_PARENT fehlt}"
-: "${SUBNET:?SUBNET fehlt}"
-: "${GATEWAY:?GATEWAY fehlt}"
-
-NETWORK_NAME="samba-ad-lan"
-
-mkdir -p "${ROOT_DIR}/data/samba" "${ROOT_DIR}/data/backups"
-
-"${ROOT_DIR}/scripts/generate-config.sh"
+mkdir -p \
+  "${ROOT_DIR}/data/samba-etc" \
+  "${ROOT_DIR}/data/samba-private" \
+  "${ROOT_DIR}/data/samba-var" \
+  "${ROOT_DIR}/data/backups"
 
 echo ""
 echo "Setup abgeschlossen. Nächste Schritte:"
-echo "  1. Host-Shim (optional, für Host→DC Kommunikation): sudo ${ROOT_DIR}/scripts/setup-host-shim.sh"
+echo "  1. Host-Shim (für Host→DC): sudo ${ROOT_DIR}/scripts/setup-host-shim.sh"
 echo "  2. DC starten: docker compose up -d samba-dc"
-echo "  3. Nach erstem Start (Provisionierung ~2 Min): ${ROOT_DIR}/scripts/configure-dc.sh"
+echo "  3. Nach Provisionierung: ${ROOT_DIR}/scripts/configure-dc.sh"

@@ -23,17 +23,30 @@ docker compose up -d
 
 echo ""
 echo "Warte auf Provisionierung (bis smb.conf existiert)..."
-for i in $(seq 1 60); do
-  if docker exec dc01 test -f /var/lib/samba/private/smb.conf 2>/dev/null; then
-  echo "Domain provisioniert."
-  break
+provisioned=0
+for _ in $(seq 1 72); do
+  if docker exec dc01 test -f /usr/local/samba/private/smb.conf 2>/dev/null \
+    || docker exec dc01 test -f /var/lib/samba/private/smb.conf 2>/dev/null; then
+    echo "Domain provisioniert."
+    provisioned=1
+    break
+  fi
+  if ! docker ps --format '{{.Names}}' | grep -qx dc01; then
+    echo "Container dc01 nicht läuft – Logs:" >&2
+    docker logs dc01 --tail 30 >&2 || true
+    exit 1
   fi
   sleep 5
 done
 
+if [[ "${provisioned}" -eq 0 ]]; then
+  echo "Timeout bei Provisionierung. Prüfe: docker logs dc01" >&2
+  exit 1
+fi
+
 "${ROOT_DIR}/scripts/configure-dc.sh"
 
 echo ""
-echo "DC: dc01.ad.orv.space (${DC_IP:-192.168.100.10})"
-echo "Domain join: ad.orv.space (NetBIOS: AD)"
+echo "DC: ${DC_HOSTNAME:-dc01}.${REALM:-ad.orv.space} (${DC_IP:-192.168.100.10})"
+echo "Domain join: ${REALM:-ad.orv.space} (NetBIOS: ${DOMAIN:-AD})"
 echo "Backup: ${ROOT_DIR}/scripts/backup.sh"
