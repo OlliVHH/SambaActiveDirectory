@@ -12,6 +12,9 @@ fi
 
 chmod +x "${ROOT_DIR}/scripts/"*.sh
 
+# shellcheck source=/dev/null
+set -a; source "${ROOT_DIR}/.env"; set +a
+
 "${ROOT_DIR}/scripts/setup-network.sh"
 
 cd "${ROOT_DIR}"
