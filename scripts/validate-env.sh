@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Prüft .env vor dem Start (REALM, ADMIN_PASSWORD, Image-Tag).
+# Prüft .env vor dem Start.
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -28,14 +28,13 @@ if [[ ${#missing[@]} -gt 0 ]]; then
 fi
 
 arch="$(uname -m)"
-case "${arch}" in
-  aarch64|arm64)
-    if [[ "${SAMBA_AD_IMAGE}" == *":4.24.3"* ]] || [[ "${SAMBA_AD_IMAGE}" == *"quay.io"* ]]; then
-      echo "Fehler: ${SAMBA_AD_IMAGE} ist nicht ARM64-native." >&2
-      echo "Setze: SAMBA_AD_IMAGE=diegogslomp/samba-ad-dc:arm64" >&2
-      exit 1
-    fi
-    ;;
-esac
+if [[ "${arch}" == "aarch64" || "${arch}" == "arm64" ]]; then
+  if [[ "${SAMBA_AD_IMAGE}" == *"quay.io"* ]] || [[ "${SAMBA_AD_IMAGE}" == *"diegogslomp"* ]]; then
+    echo "Hinweis: Für Raspberry Pi nutze das lokale Image:" >&2
+    echo "  SAMBA_AD_IMAGE=samba-ad-orv:bookworm-arm64" >&2
+    echo "  ./scripts/build-image.sh" >&2
+    exit 1
+  fi
+fi
 
 echo "OK: REALM=${REALM} DOMAIN=${DOMAIN} IMAGE=${SAMBA_AD_IMAGE}"

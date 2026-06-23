@@ -43,19 +43,17 @@ fi
 
 docker compose -f "${ROOT_DIR}/docker-compose.yml" stop samba-dc
 
-for dir in samba-etc samba-private samba-var; do
-  mkdir -p "${ROOT_DIR}/data/${dir}"
-  find "${ROOT_DIR}/data/${dir}" -mindepth 1 -delete
-done
+mkdir -p "${ROOT_DIR}/data/samba"
+find "${ROOT_DIR}/data/samba" -mindepth 1 -delete
+
+IMAGE="${SAMBA_AD_IMAGE:-samba-ad-orv:bookworm-arm64}"
 
 docker compose -f "${ROOT_DIR}/docker-compose.yml" run --rm \
-  -v "${ROOT_DIR}/data/samba-etc:/usr/local/samba/etc" \
-  -v "${ROOT_DIR}/data/samba-private:/usr/local/samba/private" \
-  -v "${ROOT_DIR}/data/samba-var:/usr/local/samba/var" \
+  -v "${ROOT_DIR}/data/samba:/var/lib/samba" \
   -v "${BACKUP_TAR}:/restore.tar:ro" \
   --entrypoint bash \
-  "${SAMBA_AD_IMAGE:-diegogslomp/samba-ad-dc:arm64}" \
-  -c 'samba-tool domain backup restore --backup-file=/restore.tar --newservername=DC01 --targetdir=/usr/local/samba'
+  "${IMAGE}" \
+  -c 'samba-tool domain backup restore --backup-file=/restore.tar --newservername=DC01 --targetdir=/var/lib/samba'
 
 echo "Starte DC neu ..."
 docker compose -f "${ROOT_DIR}/docker-compose.yml" up -d samba-dc

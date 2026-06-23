@@ -1,6 +1,11 @@
 services:
   samba-dc:
     image: ${SAMBA_AD_IMAGE}
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+      platforms:
+        - linux/arm64
     container_name: dc01
     hostname: ${DC_HOSTNAME}
     privileged: true
@@ -8,9 +13,7 @@ services:
       lan:
         ipv4_address: ${DC_IP}
     volumes:
-      - samba-etc:/usr/local/samba/etc
-      - samba-private:/usr/local/samba/private
-      - samba-var:/usr/local/samba/var
+      - samba-data:/var/lib/samba
     env_file:
       - .env
     environment:
@@ -18,10 +21,9 @@ services:
       DOMAIN: ${DOMAIN:-AD}
       ADMIN_PASS: ${ADMIN_PASSWORD}
       DNS_FORWARDER: ${DNS_FORWARDER:-192.168.100.170}
+      DC_HOST_IP: ${DC_IP}
       BIND_NETWORK_INTERFACES: "false"
     restart: unless-stopped
-    labels:
-      - com.centurylinklabs.watchtower.enable=true
     healthcheck:
       test: ["CMD-SHELL", "samba-tool testparm -s >/dev/null 2>&1"]
       interval: 60s
@@ -53,21 +55,9 @@ networks:
           gateway: ${GATEWAY}
 
 volumes:
-  samba-etc:
+  samba-data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${PWD}/data/samba-etc
-  samba-private:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PWD}/data/samba-private
-  samba-var:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PWD}/data/samba-var
+      device: ${PWD}/data/samba

@@ -10,19 +10,10 @@ if [[ ! -f "${ENV_FILE}" ]]; then
   exit 1
 fi
 
-set -a
-# shellcheck source=/dev/null
-source "${ENV_FILE}"
-set +a
-
-mkdir -p \
-  "${ROOT_DIR}/data/samba-etc" \
-  "${ROOT_DIR}/data/samba-private" \
-  "${ROOT_DIR}/data/samba-var" \
-  "${ROOT_DIR}/data/backups"
+mkdir -p "${ROOT_DIR}/data/samba" "${ROOT_DIR}/data/backups"
 
 echo ""
 echo "Setup abgeschlossen. Nächste Schritte:"
-echo "  1. Host-Shim (für Host→DC): sudo ${ROOT_DIR}/scripts/setup-host-shim.sh"
-echo "  2. DC starten: docker compose up -d samba-dc"
-echo "  3. Nach Provisionierung: ${ROOT_DIR}/scripts/configure-dc.sh"
+echo "  1. Image bauen: ${ROOT_DIR}/scripts/build-image.sh"
+echo "  2. Host-Shim: sudo ${ROOT_DIR}/scripts/setup-host-shim.sh"
+echo "  3. Deploy: ${ROOT_DIR}/scripts/deploy.sh"

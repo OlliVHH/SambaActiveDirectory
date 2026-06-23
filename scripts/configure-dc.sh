@@ -38,8 +38,8 @@ LEASE_TIME="$6"
 
 SMB_CONF=""
 for candidate in \
-  /usr/local/samba/private/smb.conf \
-  /var/lib/samba/private/smb.conf; do
+  /var/lib/samba/private/smb.conf \
+  /usr/local/samba/private/smb.conf; do
   if [[ -f "${candidate}" ]]; then
     SMB_CONF="${candidate}"
     break
