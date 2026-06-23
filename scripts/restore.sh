@@ -54,7 +54,7 @@ docker compose -f "${ROOT_DIR}/docker-compose.yml" run --rm \
   -v "${ROOT_DIR}/data/samba-var:/usr/local/samba/var" \
   -v "${BACKUP_TAR}:/restore.tar:ro" \
   --entrypoint bash \
-  "${SAMBA_AD_IMAGE:-diegogslomp/samba-ad-dc:4.24.3}" \
+  "${SAMBA_AD_IMAGE:-diegogslomp/samba-ad-dc:arm64}" \
   -c 'samba-tool domain backup restore --backup-file=/restore.tar --newservername=DC01 --targetdir=/usr/local/samba'
 
 echo "Starte DC neu ..."
