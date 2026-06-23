@@ -11,11 +11,13 @@ services:
       - samba-etc:/usr/local/samba/etc
       - samba-private:/usr/local/samba/private
       - samba-var:/usr/local/samba/var
+    env_file:
+      - .env
     environment:
-      REALM: ${REALM}
-      DOMAIN: ${DOMAIN}
+      REALM: ${REALM:-ad.orv.space}
+      DOMAIN: ${DOMAIN:-AD}
       ADMIN_PASS: ${ADMIN_PASSWORD}
-      DNS_FORWARDER: ${DNS_FORWARDER}
+      DNS_FORWARDER: ${DNS_FORWARDER:-192.168.100.170}
       BIND_NETWORK_INTERFACES: "false"
     restart: unless-stopped
     labels:

@@ -15,16 +15,7 @@ chmod +x "${ROOT_DIR}/scripts/"*.sh
 # shellcheck source=/dev/null
 set -a; source "${ROOT_DIR}/.env"; set +a
 
-arch="$(uname -m)"
-case "${arch}" in
-  aarch64|arm64)
-    if [[ "${SAMBA_AD_IMAGE}" == *":4.24.3"* ]] || [[ "${SAMBA_AD_IMAGE}" == *"quay.io"* ]]; then
-      echo "Fehler: ${SAMBA_AD_IMAGE} ist nicht ARM64-native." >&2
-      echo "Setze in .env: SAMBA_AD_IMAGE=diegogslomp/samba-ad-dc:arm64" >&2
-      exit 1
-    fi
-    ;;
-esac
+"${ROOT_DIR}/scripts/validate-env.sh"
 
 "${ROOT_DIR}/scripts/setup-network.sh"
 
