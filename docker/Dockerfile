@@ -24,6 +24,7 @@ RUN apt-get update \
     ca-certificates \
  && rm -rf /var/lib/apt/lists/* \
  && rm -f /etc/samba/smb.conf \
+ && mkdir -p /etc/samba \
  && samba -V
 
 COPY sbin/ /usr/local/sbin/
