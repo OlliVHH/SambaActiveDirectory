@@ -54,7 +54,7 @@ docker compose version >/dev/null || { echo "FEHLER: docker compose nicht verfü
 ip link show "${MACVLAN_PARENT}" >/dev/null || { echo "FEHLER: Interface ${MACVLAN_PARENT} nicht gefunden" >&2; exit 1; }
 
 echo "=== 4/7 Alte Container stoppen, Daten leeren ==="
-docker compose down 2>/dev/null || true
+docker compose down --remove-orphans 2>/dev/null || true
 mkdir -p "${ROOT_DIR}/data/samba" "${ROOT_DIR}/data/backups"
 find "${ROOT_DIR}/data/samba" -mindepth 1 -delete 2>/dev/null || true
 

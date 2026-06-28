@@ -23,7 +23,7 @@ services:
       DC_HOST_IP: ${DC_IP}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "test -f /var/lib/samba/private/secrets.keytab && samba-tool testparm -s >/dev/null 2>&1"]
+      test: ["CMD-SHELL", "test -f /var/lib/samba/private/secrets.keytab && { test -f /etc/samba/smb.conf || test -f /var/lib/samba/private/smb.conf; } && samba-tool testparm -s >/dev/null 2>&1"]
       interval: 30s
       timeout: 10s
       retries: 5

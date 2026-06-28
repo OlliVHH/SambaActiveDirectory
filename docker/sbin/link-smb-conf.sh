@@ -1,14 +1,23 @@
 #!/usr/bin/env bash
-# Debian samba erwartet /etc/samba/smb.conf – AD-Config liegt unter /var/lib/samba/private/.
+# Debian legt smb.conf oft nach /etc/samba/smb.conf – beide Pfade unterstützen.
 set -euo pipefail
 
 SAMBA_STATE="${SAMBA_STATE:-/var/lib/samba}"
-SMB_PRIVATE="${SAMBA_STATE}/private/smb.conf"
+PRIVATE="${SAMBA_STATE}/private/smb.conf"
+ETC="/etc/samba/smb.conf"
 
-if [[ ! -f "${SMB_PRIVATE}" ]]; then
-  echo "Fehler: ${SMB_PRIVATE} fehlt." >&2
-  exit 1
+mkdir -p /etc/samba "${SAMBA_STATE}/private"
+
+if [[ -f "${PRIVATE}" ]]; then
+  ln -sf "${PRIVATE}" "${ETC}"
+  echo "Symlink: ${ETC} -> ${PRIVATE}"
+  exit 0
 fi
 
-mkdir -p /etc/samba
-ln -sf "${SMB_PRIVATE}" /etc/samba/smb.conf
+if [[ -f "${ETC}" ]]; then
+  echo "smb.conf OK: ${ETC}"
+  exit 0
+fi
+
+echo "Fehler: keine smb.conf in ${PRIVATE} oder ${ETC}" >&2
+exit 1
