@@ -17,6 +17,9 @@ fi
 
 echo "Provisioniere Samba AD: REALM=${REALM} DOMAIN=${DOMAIN}"
 
+# Debian-Paket: /etc/samba/smb.conf mit "standalone server" blockiert AD-Provision
+rm -f /etc/samba/smb.conf /etc/samba/smb.conf.dpkg-old 2>/dev/null || true
+
 provision_common=(
   --server-role=dc
   --use-rfc2307

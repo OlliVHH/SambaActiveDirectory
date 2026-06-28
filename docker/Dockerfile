@@ -22,6 +22,7 @@ RUN apt-get update \
     tini \
     ca-certificates \
  && rm -rf /var/lib/apt/lists/* \
+ && rm -f /etc/samba/smb.conf \
  && samba -V
 
 COPY sbin/ /usr/local/sbin/
