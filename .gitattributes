@@ -1,0 +1,8 @@
+# Shell-Skripte immer mit Unix-Zeilenenden (LF)
+*.sh text eol=lf
+docker/sbin/* text eol=lf
+
+# Docker / Compose
+Dockerfile text eol=lf
+docker-compose.yml text eol=lf
+.env.example text eol=lf

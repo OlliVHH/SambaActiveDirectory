@@ -28,7 +28,8 @@ RUN apt-get update \
  && samba -V
 
 COPY sbin/ /usr/local/sbin/
-RUN chmod +x /usr/local/sbin/*.sh
+RUN sed -i 's/\r$//' /usr/local/sbin/*.sh \
+ && chmod +x /usr/local/sbin/*.sh
 
 # AD DC Ports (Macvlan: direkt im LAN erreichbar)
 EXPOSE 53/tcp 53/udp 88/tcp 88/udp 135/tcp 137/udp 138/udp 139/tcp 389/tcp 445/tcp \
