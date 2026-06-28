@@ -20,12 +20,14 @@ set -a; source "${ROOT_DIR}/.env"; set +a
 
 cd "${ROOT_DIR}"
 
-if ! docker image inspect "${SAMBA_AD_IMAGE}" >/dev/null 2>&1; then
-  echo "Image ${SAMBA_AD_IMAGE} nicht gefunden – baue lokal ..."
-  "${ROOT_DIR}/scripts/build-image.sh"
-else
-  echo "Image ${SAMBA_AD_IMAGE} vorhanden – überspringe Build (./scripts/build-image.sh zum Neu-Bauen)"
+if [[ ! -f "${ROOT_DIR}/docker/Dockerfile" ]]; then
+  echo "Fehler: docker/Dockerfile fehlt – git pull ausführen:" >&2
+  echo "  cp .env /tmp/samba-env.backup && git fetch origin && git reset --hard origin/main && cp /tmp/samba-env.backup .env" >&2
+  exit 1
 fi
+
+echo "Baue lokales Samba-Image ${SAMBA_AD_IMAGE} ..."
+docker compose build samba-dc
 
 docker compose pull watchtower 2>/dev/null || true
 docker compose up -d

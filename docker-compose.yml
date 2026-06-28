@@ -1,6 +1,7 @@
 services:
   samba-dc:
     image: ${SAMBA_AD_IMAGE}
+    pull_policy: build
     build:
       context: ./docker
       dockerfile: Dockerfile
