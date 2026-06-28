@@ -17,8 +17,11 @@ if docker ps --filter "name=${CONTAINER}" --filter "status=running" -q | grep -q
   docker exec "${CONTAINER}" samba-tool testparm -s 2>&1 | head -30 || true
   echo ""
   echo "=== domain info ==="
-  # shellcheck source=/dev/null
-  source "${ROOT_DIR}/.env" 2>/dev/null || true
+  if [[ -f "${ROOT_DIR}/.env" ]]; then
+    # shellcheck source=scripts/lib/load-env.sh
+    source "${ROOT_DIR}/scripts/lib/load-env.sh"
+    load_env "${ROOT_DIR}/.env"
+  fi
   docker exec "${CONTAINER}" samba-tool domain info "${DC_IP:-192.168.100.10}" 2>&1 || true
   echo ""
   echo "=== processes ==="

@@ -16,4 +16,4 @@ if [[ -d "${ROOT_DIR}/data/samba" ]]; then
   find "${ROOT_DIR}/data/samba" -mindepth 1 -delete 2>/dev/null || true
 fi
 
-echo "Daten geloescht. Weiter: ./scripts/deploy.sh"
+echo "Daten geloescht. Weiter: bash scripts/deploy.sh"

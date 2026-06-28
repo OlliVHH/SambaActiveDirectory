@@ -11,14 +11,18 @@ if [[ ! -f "${ENV_FILE}" ]]; then
   exit 1
 fi
 
-chmod +x "${ROOT_DIR}/scripts/"*.sh
+chmod +x "${ROOT_DIR}/scripts/"*.sh 2>/dev/null || true
 
-set -a
-# shellcheck source=/dev/null
-source "${ENV_FILE}"
-set +a
+# shellcheck source=scripts/lib/load-env.sh
+source "${ROOT_DIR}/scripts/lib/load-env.sh"
+load_env "${ENV_FILE}"
 
-for var in REALM DOMAIN ADMIN_PASSWORD DC_IP DNS_FORWARDER SAMBA_AD_IMAGE MACVLAN_PARENT SUBNET GATEWAY; do
+if [[ "${ADMIN_PASSWORD}" == "ChangeMe_SecurePassword123!" ]]; then
+  echo "Fehler: Bitte ADMIN_PASSWORD in .env ändern." >&2
+  exit 1
+fi
+
+for var in REALM DOMAIN ADMIN_PASSWORD DC_IP DNS_FORWARDER SAMBA_AD_IMAGE MACVLAN_PARENT SUBNET GATEWAY DC_HOSTNAME; do
   if [[ -z "${!var:-}" ]]; then
     echo "Fehler: ${var} fehlt in .env" >&2
     exit 1
