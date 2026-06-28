@@ -10,6 +10,9 @@ services:
     container_name: dc01
     hostname: ${DC_HOSTNAME}
     privileged: true
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: 1
+      net.ipv6.conf.default.disable_ipv6: 1
     networks:
       lan:
         ipv4_address: ${DC_IP}
@@ -23,7 +26,7 @@ services:
       ADMIN_PASS: ${ADMIN_PASSWORD}
       DNS_FORWARDER: ${DNS_FORWARDER:-192.168.100.170}
       DC_HOST_IP: ${DC_IP}
-      BIND_NETWORK_INTERFACES: "false"
+      BIND_NETWORK_INTERFACES: "true"
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "samba-tool testparm -s >/dev/null 2>&1"]
